@@ -307,7 +307,7 @@ test("reduced motion uses static arrows; phone controls and BM remain usable", a
   await ready(page);
   await expect(page.getByRole("button", { name: "Static wind arrows" })).toBeDisabled();
   await expect(canvas(page)).toHaveAttribute("data-running", "false");
-  expect((await pixels(page)).nonempty).toBeGreaterThan(100);
+  await expect.poll(async () => (await pixels(page)).nonempty).toBeGreaterThan(100);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: info.outputPath("mobile-reduced.png"), fullPage: true });
   await page.getByRole("button", { name: "BM", exact: true }).click();
