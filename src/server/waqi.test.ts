@@ -28,6 +28,19 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe("WAQI current observations", () => {
+  it("rejects redirects without forwarding credentials and uses a Worker-supported redirect mode", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(
+        new Response(null, { status: 302, headers: { Location: "https://example.org/redirect" } }),
+      );
+    const result = await fetchWaqiSnapshot({ token: "test-key", fetcher, now: () => now });
+    expect(fetcher).toHaveBeenCalledTimes(1);
+    expect(fetcher.mock.calls[0][1]?.redirect).toBe("manual");
+    expect(result.status).toBe("unavailable");
+    expect(result.observations).toEqual([]);
+    expect(JSON.stringify(result)).not.toContain("test-key");
+  });
   it("counts discovery and retries within the configured upstream request budget", async () => {
     vi.stubEnv("WAQI_MAX_REQUESTS", "7");
     const attempts = new Map<string, number>();
@@ -223,7 +236,7 @@ describe("WAQI current observations", () => {
     for (const [url, options] of fetcher.mock.calls) {
       expect(new URL(String(url)).hostname).toBe("api.waqi.info");
       expect(options?.cache).toBe("no-store");
-      expect(options?.redirect).toBe("error");
+      expect(options?.redirect).toBe("manual");
     }
   });
   it("omits outside-Malaysia and mismatched identities and reports partial failure", async () => {

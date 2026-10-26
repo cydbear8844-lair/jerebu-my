@@ -104,7 +104,7 @@ async function request(
     try {
       const response = await fetcher(url, {
         cache: "no-store",
-        redirect: "error",
+        redirect: "manual",
         signal: AbortSignal.any([signal, AbortSignal.timeout(8000)]),
       });
       if ([401, 403].includes(response.status))
