@@ -26,6 +26,7 @@
     "format:check": "prettier --check src scripts tests *.ts *.mjs package.json tsconfig.json .prettierrc.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
+    "demo:prepare": "cross-env JEREBU_GENERATE_DEMO_TIMELINE=1 vitest run src/server/demo-performance.test.ts",
     "test:e2e": "playwright test",
     "geo:prepare": "node scripts/prepare-geography.mjs",
     "geo:validate": "node scripts/prepare-geography.mjs --validate",

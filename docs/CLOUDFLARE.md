@@ -47,6 +47,8 @@ The scoped `@node-minify/core` override uses patched `glob` 10.5.0 for [CVE-2025
 
 ## Verification and rollback
 
+The fixed demo snapshot generates only the latest eligible candidate for each station, then applies the shared source, timestamp and freshness policy. It does not rebuild the 30-day archive on every request. The availability ruler uses `src/lib/demo-timeline.json`, generated from the full synthetic archive with `npm run demo:prepare`. Run that command after changing demo fixtures or freshness rules. Regression tests compare all 721 availability frames with the original calculation and check snapshot equivalence at publication, missing-data and stale boundaries. This precomputation applies only to explicit demo data; it is not a live-data cache.
+
 Before publishing, run the unit/API suite, lint, formatting, typecheck, geography validation, the Cloudflare build and dry run. Exercise the actual Worker preview, including deep links, API timestamps, history gaps, map assets, wind, station navigation, Near Me, BM/EN and mobile controls. Keep current run evidence separate from historical results; a successful package build alone does not verify a hosted deployment.
 
 After deployment, confirm the HTTPS URL, demo/source labels, region/station reloads, map WebGL output and the absence of unintended provider requests. Check runtime errors and CPU limits before treating the Free plan as suitable for the full workload. Do not remove requested features or upgrade the account automatically to resolve a plan limit.

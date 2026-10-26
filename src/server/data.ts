@@ -1,20 +1,17 @@
 import "server-only";
 import { z } from "zod";
-import {
-  latestObservations,
-  observationStatus,
-  summarizeRegion,
-  timestampSchema,
-} from "../lib/domain";
+import { latestObservations, summarizeRegion, timestampSchema } from "../lib/domain";
 import {
   DEMO_CLOCK,
   DEMO_SOURCE,
   DEMO_START,
   DEMO_STATIONS,
   fixtureSeries,
+  fixtureSnapshot,
   HOUR_MS,
 } from "../lib/fixtures";
 import { REGIONS } from "../lib/regions";
+import demoTimeline from "../lib/demo-timeline.json";
 import type { HistoryPoint, Snapshot, Station } from "../lib/types";
 import { fetchWaqiSnapshot, hasWaqiToken, waqiUnavailable, WAQI_HISTORY_REASON } from "./waqi";
 import { createAdmissionBudget } from "./admission";
@@ -78,7 +75,7 @@ export function getSnapshot(asOf?: string, mode = process.env.DATA_MODE): Snapsh
     };
   }
   const selectedTime = coveredTimestamp(asOf ?? DEMO_CLOCK);
-  const observations = latestObservations(DEMO_STATIONS.flatMap(fixtureSeries), selectedTime);
+  const observations = latestObservations(fixtureSnapshot(selectedTime), selectedTime);
   return {
     mode: "demo",
     status: "available",
@@ -94,29 +91,8 @@ export function getSnapshot(asOf?: string, mode = process.env.DATA_MODE): Snapsh
   };
 }
 
-let demoTimeline:
-  { start: string; end: string; frames: { at: string; freshCount: number }[] } | undefined;
-
 export function getTimeline() {
   if (process.env.DATA_MODE !== "demo") throw new DataError(WAQI_HISTORY_REASON, 503);
-  if (demoTimeline) return demoTimeline;
-  const series = DEMO_STATIONS.map(fixtureSeries);
-  const cursors = series.map(() => -1);
-  const frames: { at: string; freshCount: number }[] = [];
-  for (let time = Date.parse(DEMO_START); time <= Date.parse(DEMO_CLOCK); time += HOUR_MS) {
-    const at = new Date(time).toISOString();
-    let freshCount = 0;
-    series.forEach((observations, index) => {
-      while (
-        cursors[index] + 1 < observations.length &&
-        Date.parse(observations[cursors[index] + 1].fetchedAt) <= time
-      )
-        cursors[index]++;
-      if (observationStatus(observations[cursors[index]], at) === "fresh") freshCount++;
-    });
-    frames.push({ at, freshCount });
-  }
-  demoTimeline = { start: DEMO_START, end: DEMO_CLOCK, frames };
   return demoTimeline;
 }
 

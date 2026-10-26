@@ -147,8 +147,10 @@ export function summarizeRegion(
 ): RegionSummary {
   const regionalStations = stations.filter((s) => s.regionId === regionId);
   const ids = new Set(regionalStations.map((s) => s.id));
-  const latest = latestObservations(observations, asOf, selection).filter((o) =>
-    ids.has(o.stationId),
+  const latest = latestObservations(
+    observations.filter((observation) => ids.has(observation.stationId)),
+    asOf,
+    selection,
   );
   const eligible = latest
     .filter((o) => observationStatus(o, asOf) === "fresh")
