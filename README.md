@@ -22,7 +22,7 @@ npm run start:demo
 
 ## Cloudflare Workers setup
 
-Cloudflare Workers is the current hosting target. The OpenNext adapter preserves the existing Next.js server-rendered pages and API handlers. Start with `npm ci`, then `npm run build:cloudflare`, `npm run check:cloudflare` and `npm run preview:cloudflare`. The committed configuration uses explicit demo mode and requires no provider credential or storage resource. Use the sanitised public repository for deployment. See [Cloudflare setup](docs/CLOUDFLARE.md) for Git build settings, local preview, source semantics and rollback.
+Cloudflare Workers is the current hosting target. The OpenNext adapter preserves the existing Next.js server-rendered pages and API handlers. Start with `npm ci`, then `npm run build:cloudflare` and `npm run check:cloudflare`. Deployment uses live mode and requires `WAQI_API_TOKEN` as a Production runtime Secret; never configure it as a build variable. For local demo Worker preview, copy `.dev.vars.example` to `.dev.vars` before `npm run preview:cloudflare`. The owner has authorised live operation while WAQI's public donation-supported-use clarification remains pending; this is not provider approval. Use the sanitised public repository for deployment. See [Cloudflare setup](docs/CLOUDFLARE.md) for request limits, source semantics and rollback.
 
 ## Vercel setup (alternative)
 

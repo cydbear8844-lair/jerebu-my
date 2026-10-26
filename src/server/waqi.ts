@@ -1,13 +1,11 @@
 import "server-only";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
 import { setTimeout as wait } from "node:timers/promises";
-import type { FeatureCollection, Geometry } from "geojson";
 import { z } from "zod";
 import { summarizeRegion, timestampSchema } from "../lib/domain";
 import { pointInMalaysia } from "../lib/nearest-station";
 import { REGIONS } from "../lib/regions";
 import type { Attribution, Observation, Snapshot, Station } from "../lib/types";
+import { loadGeography } from "./geography";
 
 export const WAQI_HISTORY_REASON =
   "Live history and replay are unavailable: no authorised station-history endpoint or retention contract is configured. WAQI API terms restrict cached and archived redistribution.";
@@ -91,6 +89,7 @@ async function request(
   fetcher: typeof fetch,
   delay: number,
   signal: AbortSignal,
+  admit: () => boolean,
 ): Promise<unknown> {
   const url = new URL(pathname, "https://api.waqi.info");
   url.searchParams.set("token", token);
@@ -101,6 +100,7 @@ async function request(
   for (let attempt = 0; attempt < 2; attempt++) {
     if (signal.aborted)
       throw new ProviderFailure("WAQI request cancelled or hydration deadline reached.", true);
+    if (!admit()) throw new ProviderFailure("WAQI upstream request budget reached.", true);
     try {
       const response = await fetcher(url, {
         cache: "no-store",
@@ -159,6 +159,12 @@ export async function fetchWaqiSnapshot(options: Options = {}): Promise<Snapshot
       "Configure a private WAQI_API_TOKEN in .env.local to request live observations. No demo readings are substituted.",
     );
   const fetcher = options.fetcher ?? fetch;
+  const maxRequests =
+    process.env.WAQI_MAX_REQUESTS === undefined ? 162 : Number(process.env.WAQI_MAX_REQUESTS);
+  if (!Number.isInteger(maxRequests) || maxRequests < 1 || maxRequests > 162)
+    return waqiUnavailable(now(), "WAQI_MAX_REQUESTS must be an integer from 1 to 162.");
+  let requests = 0;
+  const admit = () => requests++ < maxRequests;
   const delay = options.retryDelayMs ?? 250;
   const budget = new AbortController();
   const requestedBudget = options.budgetMs ?? WAQI_HYDRATION_BUDGET_MS;
@@ -169,16 +175,11 @@ export async function fetchWaqiSnapshot(options: Options = {}): Promise<Snapshot
   const signal = options.signal ? AbortSignal.any([budget.signal, options.signal]) : budget.signal;
   try {
     const candidates = candidateSchema.parse(
-      await request("/v2/map/bounds/", token, fetcher, delay, signal),
+      await request("/v2/map/bounds/", token, fetcher, delay, signal, admit),
     );
     const ids = [...new Set(candidates.map((c) => c.uid))].sort((a, b) => a - b);
     const selected = ids.slice(0, 80);
-    const geography = JSON.parse(
-      await readFile(path.join(process.cwd(), "public/data/malaysia-regions.geojson"), {
-        encoding: "utf8",
-        signal,
-      }),
-    ) as FeatureCollection<Geometry>;
+    const geography = await loadGeography(signal);
     const stations: Station[] = [];
     const observations: Observation[] = [];
     let omitted = 0,
@@ -192,7 +193,7 @@ export async function fetchWaqiSnapshot(options: Options = {}): Promise<Snapshot
           const id = selected[cursor++];
           try {
             const parsed = feedSchema.safeParse(
-              await request(`/feed/@${id}/`, token, fetcher, delay, signal),
+              await request(`/feed/@${id}/`, token, fetcher, delay, signal, admit),
             );
             if (!parsed.success || parsed.data.idx !== id) {
               failed++;

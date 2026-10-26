@@ -19,9 +19,15 @@ npm run check:cloudflare
 npm run preview:cloudflare
 ```
 
-The build script explicitly selects demo mode. `wrangler.json` sets `DATA_MODE=demo` at runtime. For local Worker preview, copy `.dev.vars.example` to `.dev.vars`; it contains only non-secret demo settings. Keep `.dev.vars`, `.env.local`, `.wrangler/` and `.open-next/` out of Git. Provider credentials are unnecessary for the initial deployment.
+The build script selects demo mode only while compiling. `wrangler.json` selects live mode at deployment runtime. For local demo Worker preview, copy `.dev.vars.example` to `.dev.vars`; it overrides the deployment setting without a provider key. Keep `.dev.vars`, `.env.local`, `.wrangler/` and `.open-next/` out of Git.
 
-Build and deploy from a clean checkout without `.env` or mode-specific `.env.*` files. OpenNext 1.20.13 embeds those files into its generated server environment module, including development/test files. The Cloudflare scripts reject such source files and refuse generated environment modules containing values. Keep private files in the original development workspace; do not move or delete them to bypass the guard. Use Cloudflare runtime Secrets for any separately authorised future live integration. `.env.example` and `.dev.vars` are allowed because they are not embedded by that adapter step.
+Configure `WAQI_API_TOKEN` as a Production runtime **Secret** in Cloudflare, never as a build variable or `NEXT_PUBLIC` value. The owner authorised public live use on 27 October 2026 while WAQI's clarification about individual, donation-supported use remains pending. This is an operator decision, not provider approval. Keep mandatory attribution, unvalidated/source labels and free access; disable the relevant integration or support function if WAQI rejects the arrangement. Live history remains unavailable.
+
+`WAQI_MAX_REQUESTS=45` bounds actual upstream attempts per snapshot, including discovery and retries, below Cloudflare Free's 50-subrequest limit. Four concurrent hydrations and the existing 20-second deadline remain. Once the budget is exhausted, completed observations remain available with explicit partial coverage. No missing region is filled from demo data. Without this setting, the existing Node deployment permits at most 162 attempts (discovery plus 80 feeds, each with one retry). The six-snapshot-per-minute admission control is process-local, not a global quota across Worker isolates.
+
+The server loads licensed boundaries through the Worker's `ASSETS` binding. Node development uses the existing local file. Only this static geography is reused in memory; settled WAQI observations are not cached. A local mocked-provider Worker reproduced the old filesystem `ENOENT` failure before this change; the asset request returned the original 505,497-byte boundary file. Failed or cancelled loads remain failures.
+
+Build and deploy from a clean checkout without `.env` or mode-specific `.env.*` files. OpenNext 1.20.13 embeds those files into its generated server environment module, including development/test files. The Cloudflare scripts reject such source files and refuse generated environment modules containing values. Keep private files in the original development workspace; do not move or delete them to bypass the guard. Provider credentials belong only in Cloudflare runtime Secrets. `.env.example` and `.dev.vars` are allowed because they are not embedded by that adapter step.
 
 OpenNext warns that native Windows support is incomplete; use Cloudflare's Linux build environment for deployment. `npm run dev:demo`, `npm run build` and `npm run start:demo` remain available for the existing Node.js workflow. A restricted local runner may need `XDG_CONFIG_HOME`, `XDG_CACHE_HOME` and `WRANGLER_LOG_PATH` directed to writable, ignored workspace directories; do not reset system permissions to run preview.
 
@@ -37,11 +43,11 @@ Connect only `cydbear8844-lair/jerebu-my` to Cloudflare Workers & Pages. Do not 
 | Build command | `npm run build:cloudflare` |
 | Deploy command | `npm run deploy:cloudflare` |
 | Build runtime | Node.js 24, selected by `.node-version` |
-| Runtime mode | Committed `DATA_MODE=demo` |
+| Runtime mode | Committed `DATA_MODE=live`; runtime token required |
 
 The adapter and Wrangler are pinned to 1.20.13 and 4.153.0. Next.js stays at 16.4.2. The configuration uses Node.js compatibility, static assets and a self-reference binding. It enables no storage, scheduler, image service or paid add-on. Hosting remains subject to the account's plan and limits; no paid upgrade is authorised implicitly.
 
-`/_next/static/*` receives immutable caching because those filenames are content-addressed. API responses keep their existing no-store policy. Geometry, support images, notices and fonts remain static assets. No persistent live history or new provider feed is introduced. The demo indicator remains visible, and a failed live feed never becomes demo data.
+`/_next/static/*` receives immutable caching because those filenames are content-addressed. API responses keep their existing no-store policy. Geometry, support images, notices and fonts remain static assets. No persistent live history or new provider feed is introduced. Demo previews retain the demo indicator; live pages identify WAQI's US-EPA-based AQI separately from Malaysian IPU. A failed live feed never becomes demo data.
 
 The scoped `@node-minify/core` override uses patched `glob` 10.5.0 for [CVE-2025-64756](https://github.com/advisories/GHSA-5j98-mcp5-4vw2). It avoids downgrading the adapter or changing unrelated dependency versions. Recheck this override when upgrading that build dependency.
 

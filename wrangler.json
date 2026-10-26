@@ -15,7 +15,8 @@
     }
   ],
   "vars": {
-    "DATA_MODE": "demo"
+    "DATA_MODE": "live",
+    "WAQI_MAX_REQUESTS": "45"
   },
   "send_metrics": false
 }

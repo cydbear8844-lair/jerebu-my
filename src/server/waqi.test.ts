@@ -28,6 +28,46 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 describe("WAQI current observations", () => {
+  it("counts discovery and retries within the configured upstream request budget", async () => {
+    vi.stubEnv("WAQI_MAX_REQUESTS", "7");
+    const attempts = new Map<string, number>();
+    const fetcher = vi.fn<typeof fetch>().mockImplementation(async (url) => {
+      const pathname = new URL(String(url)).pathname;
+      const attempt = (attempts.get(pathname) ?? 0) + 1;
+      attempts.set(pathname, attempt);
+      if (attempt === 1) return response({ status: "error" }, 503);
+      if (pathname.startsWith("/v2/map"))
+        return response({
+          status: "ok",
+          data: Array.from({ length: 80 }, (_, i) => ({ uid: i + 1 })),
+        });
+      return response(feed(Number(pathname.match(/@(\d+)/)?.[1])));
+    });
+    const result = await fetchWaqiSnapshot({
+      token: "test-key",
+      now: () => now,
+      fetcher,
+      retryDelayMs: 0,
+    });
+    expect(fetcher).toHaveBeenCalledTimes(7);
+    expect(result.stations).toHaveLength(1);
+    expect(result.coverage?.limited).toBe(true);
+    expect(result.mode).toBe("live");
+    expect(result.observations.every((observation) => observation.sourceId === "waqi")).toBe(true);
+  });
+
+  it.each(["0", "-1", "1.5", "invalid", "163"])(
+    "rejects invalid request budget %s before calling the provider",
+    async (value) => {
+      vi.stubEnv("WAQI_MAX_REQUESTS", value);
+      const fetcher = vi.fn<typeof fetch>();
+      const result = await fetchWaqiSnapshot({ token: "test-key", now: () => now, fetcher });
+      expect(result.status).toBe("unavailable");
+      expect(result.message).toContain("WAQI_MAX_REQUESTS");
+      expect(fetcher).not.toHaveBeenCalled();
+    },
+  );
+
   it("bounds the whole hydration, preserves completed feeds and aborts pending work", async () => {
     vi.useFakeTimers();
     let pending = 0,
