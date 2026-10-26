@@ -1,0 +1,59 @@
+{
+  "name": "jerebu-my",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "dev:demo": "cross-env DATA_MODE=demo next dev",
+    "build": "next build",
+    "start": "next start",
+    "start:demo": "cross-env DATA_MODE=demo next start",
+    "lint": "eslint .",
+    "format": "prettier --write src scripts tests *.ts *.mjs package.json tsconfig.json .prettierrc.json",
+    "format:check": "prettier --check src scripts tests *.ts *.mjs package.json tsconfig.json .prettierrc.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "geo:prepare": "node scripts/prepare-geography.mjs",
+    "geo:validate": "node scripts/prepare-geography.mjs --validate",
+    "postinstall": "node scripts/copy-map-assets.mjs"
+  },
+  "dependencies": {
+    "@fontsource/barlow-condensed": "latest",
+    "@fontsource/ibm-plex-sans": "latest",
+    "@radix-ui/react-dialog": "latest",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "latest",
+    "maplibre-gl": "6.14.0",
+    "next": "16.4.2",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "recharts": "3.10.1",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^3.5.0",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@tailwindcss/postcss": "^4",
+    "@testing-library/jest-dom": "latest",
+    "@testing-library/react": "latest",
+    "@types/geojson": "^7946.0.16",
+    "@types/node": "^24",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "cross-env": "^10.1.0",
+    "eslint": "^9",
+    "eslint-config-next": "16.4.2",
+    "jsdom": "26.1.0",
+    "prettier": "3.9.10",
+    "tailwindcss": "^4",
+    "typescript": "^5.9.3",
+    "vitest": "5.0.5"
+  }
+}

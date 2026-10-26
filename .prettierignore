@@ -1,0 +1,5 @@
+src/components/ui/map.tsx
+node_modules
+.next
+public
+docs

@@ -1,0 +1,177 @@
+.near-me-button[aria-busy="true"] svg {
+  animation: location-search 1.2s linear infinite;
+}
+.near-me-button[data-location-phase="ping"] svg circle {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: control-acquisition var(--motion-ping, 900ms) ease-out 1;
+}
+@keyframes control-acquisition {
+  from {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  to {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+.near-me-card {
+  position: absolute;
+  z-index: 8;
+  right: 18px;
+  bottom: 76px;
+  width: min(300px, calc(100% - 36px));
+  padding: 16px;
+  background: var(--surface-panel);
+  color: var(--text-main);
+  border: 1px solid var(--border, #515861);
+  box-shadow: 0 6px 24px #0004;
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+.near-me-card p {
+  margin: 0 0 7px;
+}
+.near-me-card h3 {
+  font-size: 1.25rem;
+  font-family: "Barlow Condensed", sans-serif;
+  margin: 0 28px 6px 0;
+}
+.near-me-eyebrow {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.near-me-details[data-revealed="false"] {
+  position: absolute;
+  left: 16px;
+  right: 16px;
+  visibility: hidden;
+  pointer-events: none;
+}
+.near-me-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.near-me-dismiss {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: inherit;
+  border: 0;
+  cursor: pointer;
+}
+.near-me-reading strong {
+  font-size: 1.65rem;
+  font-variant-numeric: tabular-nums;
+}
+.near-me-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.near-me-accuracy {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+}
+.near-me-user {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  pointer-events: none;
+}
+.near-me-ping {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  top: -28px;
+  left: -28px;
+  overflow: visible;
+}
+.near-me-dot {
+  fill: #54ddc3;
+  stroke: #fff;
+  stroke-width: 3px;
+}
+.near-me-ring {
+  fill: none;
+  stroke: #54ddc3;
+  stroke-width: 2px;
+  transform-origin: 40px 40px;
+  opacity: 0;
+  animation: location-ping var(--motion-ping, 900ms) ease-out 2;
+}
+.near-me-user[data-location-phase="error"] .near-me-ring {
+  animation: none;
+}
+.near-me-station {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 2px solid #fff;
+  background: #123d36;
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  box-shadow: 0 0 0 2px #54ddc3;
+}
+.near-me-user-label {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 6px;
+  background: var(--surface-panel);
+  color: var(--text-main);
+  border: 1px solid #54ddc3;
+  white-space: nowrap;
+  font:
+    500 12px/1.3 "IBM Plex Sans",
+    sans-serif;
+}
+@keyframes location-ping {
+  from {
+    transform: scale(0.7);
+    opacity: 0.9;
+  }
+  to {
+    transform: scale(2.6);
+    opacity: 0;
+  }
+}
+@keyframes location-search {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@media (max-width: 599px) {
+  .near-me-card {
+    right: 12px;
+    bottom: 24px;
+    width: calc(100% - 24px);
+    padding: 12px 15px;
+    max-height: 45%;
+    overflow-y: auto;
+  }
+  .near-me-card p {
+    margin-bottom: 4px;
+  }
+  .near-me-accuracy {
+    display: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .near-me-button[aria-busy="true"] svg,
+  .near-me-button[data-location-phase="ping"] svg circle,
+  .near-me-ring {
+    animation: none;
+  }
+}

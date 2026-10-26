@@ -1,0 +1,242 @@
+.wind-toolbar {
+  background: var(--surface-panel);
+  border-bottom: 1px solid var(--border-muted);
+  padding: 12px 20px;
+  position: relative;
+  z-index: 8;
+}
+.overview-workspace:has(.wind-toolbar) {
+  height: auto;
+  max-height: none;
+}
+.overview-workspace .map-column:has(.wind-toolbar) {
+  height: auto;
+}
+.map-column:has(.wind-toolbar) .map-stage {
+  flex: none;
+  height: 560px;
+}
+.wind-control-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.wind-control-row label {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13px;
+}
+.wind-toolbar select {
+  color: var(--text-primary);
+  background: var(--surface-base);
+  border: 1px solid var(--border-muted);
+  min-height: 44px;
+  padding: 8px 10px;
+  max-width: 100%;
+  font-size: 14px;
+}
+.wind-control-row .button {
+  min-height: 44px;
+  font-size: 13px;
+}
+.wind-settings {
+  margin-left: auto;
+  position: relative;
+}
+.wind-settings summary {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.wind-settings-panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  width: min(300px, 80vw);
+  background: #162124;
+  padding: 18px;
+  border: 1px solid var(--border-muted);
+  box-shadow: 0 14px 28px #0008;
+  z-index: 30;
+}
+.wind-settings-panel label {
+  display: grid;
+  gap: 8px;
+  font-size: 14px;
+  margin-bottom: 16px;
+}
+.wind-settings-panel input[type="range"] {
+  width: 100%;
+  accent-color: var(--accent-ui);
+}
+.wind-settings-panel .wind-shading {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.wind-settings-panel p {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+.wind-status {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 12px;
+  margin-top: 12px;
+  color: var(--text-muted);
+}
+.wind-status strong {
+  color: var(--accent-ui);
+  font-weight: 500;
+}
+.wind-resolution,
+.wind-attribution {
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  margin-top: 6px;
+}
+.wind-legend {
+  margin-top: 12px;
+  display: flex;
+  gap: 20px;
+  align-items: start;
+  max-width: 560px;
+  font-size: 13px;
+}
+.wind-legend strong {
+  font-weight: 500;
+  white-space: nowrap;
+}
+.wind-legend > div {
+  flex: 1;
+  min-width: 150px;
+}
+.wind-color-ramp {
+  height: 7px;
+  background: linear-gradient(
+    to right,
+    #48a7d7 0%,
+    #69d9cd 16.6667%,
+    #c9e78c 33.3333%,
+    #f4b860 66.6667%,
+    #ef7479 100%
+  );
+}
+.wind-legend ol {
+  list-style: none;
+  padding: 0;
+  margin: 5px 0 0;
+  position: relative;
+  height: 18px;
+  font-variant-numeric: tabular-nums;
+}
+.wind-legend li {
+  position: absolute;
+  transform: translateX(-50%);
+}
+.wind-legend li:nth-child(1) {
+  left: 0;
+  transform: none;
+}
+.wind-legend li:nth-child(2) {
+  left: 16.6667%;
+}
+.wind-legend li:nth-child(3) {
+  left: 33.3333%;
+}
+.wind-legend li:nth-child(4) {
+  left: 66.6667%;
+}
+.wind-legend li:nth-child(5) {
+  right: 0;
+  transform: none;
+}
+.wind-provenance {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 10px;
+  line-height: 1.6;
+}
+.wind-provenance summary {
+  cursor: pointer;
+  min-height: 28px;
+}
+.wind-provenance p {
+  margin-top: 6px;
+}
+.wind-toolbar a {
+  color: var(--accent-ui);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.wind-inspect-hint {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--accent-ui);
+}
+.wind-inspector {
+  display: flex;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  padding-top: 12px;
+  font-size: 14px;
+  font-variant-numeric: tabular-nums;
+}
+.wind-inspector small {
+  flex-basis: 100%;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.wind-renderer-error {
+  position: absolute;
+  top: 100px;
+  left: 20px;
+  z-index: 5;
+  max-width: 280px;
+  font-size: 13px;
+}
+@media (min-width: 1200px) {
+  .region-is-open .wind-toolbar {
+    margin-right: 410px;
+  }
+}
+@media (max-width: 700px) {
+  .map-column:has(.wind-toolbar) .map-stage {
+    height: 480px;
+  }
+  .wind-toolbar {
+    padding: 12px;
+  }
+  .wind-control-row {
+    gap: 8px;
+  }
+  .wind-control-row > label {
+    flex: 1 1 100%;
+    justify-content: space-between;
+  }
+  .wind-control-row > .button {
+    flex: 1;
+  }
+  .wind-settings {
+    margin-left: 0;
+    flex: 1 1 100%;
+  }
+  .wind-settings-panel {
+    right: 0;
+  }
+  .wind-legend {
+    gap: 12px;
+    font-size: 12px;
+  }
+  .wind-status {
+    line-height: 1.6;
+  }
+}
