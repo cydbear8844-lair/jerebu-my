@@ -7,6 +7,8 @@ export default defineConfig([
   ...nextTypescript,
   globalIgnores([
     ".next/**",
+    ".open-next/**",
+    ".wrangler/**",
     "public/vendor/**",
     "src/components/ui/map.tsx",
     "playwright-report/**",

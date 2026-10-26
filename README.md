@@ -20,7 +20,11 @@ npm run build
 npm run start:demo
 ```
 
-## Vercel setup
+## Cloudflare Workers setup
+
+Cloudflare Workers is the current hosting target. The OpenNext adapter preserves the existing Next.js server-rendered pages and API handlers. Start with `npm ci`, then `npm run build:cloudflare`, `npm run check:cloudflare` and `npm run preview:cloudflare`. The committed configuration uses explicit demo mode and requires no provider credential or storage resource. Use the sanitised public repository for deployment. See [Cloudflare setup](docs/CLOUDFLARE.md) for Git build settings, local preview, source semantics and rollback.
+
+## Vercel setup (alternative)
 
 Import this repository as a Next.js project. Use the repository root, the committed npm lockfile and the default `npm run build` command. Begin with `DATA_MODE=demo` in the project environment. No database, tile-service key or paid resource is required for demo mode. This repository does not create a deployment or paid service automatically.
 

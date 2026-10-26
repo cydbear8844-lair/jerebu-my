@@ -18,3 +18,7 @@ docs/review/
 *.har
 *.pem
 *.key
+.open-next/
+.wrangler/
+.dev.vars*
+!.dev.vars.example

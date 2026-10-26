@@ -10,6 +10,15 @@
     "dev": "next dev",
     "dev:demo": "cross-env DATA_MODE=demo next dev",
     "build": "next build",
+    "prebuild:cloudflare": "node scripts/check-cloudflare-env.mjs",
+    "build:cloudflare": "cross-env DATA_MODE=demo opennextjs-cloudflare build",
+    "postbuild:cloudflare": "node scripts/check-cloudflare-env.mjs --artifact",
+    "prepreview:cloudflare": "node scripts/check-cloudflare-env.mjs --artifact",
+    "preview:cloudflare": "cross-env DATA_MODE=demo opennextjs-cloudflare preview",
+    "precheck:cloudflare": "node scripts/check-cloudflare-env.mjs --artifact",
+    "check:cloudflare": "wrangler deploy --dry-run --outdir .open-next/bundle",
+    "predeploy:cloudflare": "node scripts/check-cloudflare-env.mjs --artifact",
+    "deploy:cloudflare": "opennextjs-cloudflare deploy",
     "start": "next start",
     "start:demo": "cross-env DATA_MODE=demo next start",
     "lint": "eslint .",
@@ -25,6 +34,7 @@
   "dependencies": {
     "@fontsource/barlow-condensed": "latest",
     "@fontsource/ibm-plex-sans": "latest",
+    "@opennextjs/cloudflare": "1.20.13",
     "@radix-ui/react-dialog": "latest",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -54,6 +64,12 @@
     "prettier": "3.9.10",
     "tailwindcss": "^4",
     "typescript": "^5.9.3",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "wrangler": "4.153.0"
+  },
+  "overrides": {
+    "@node-minify/core": {
+      "glob": "10.5.0"
+    }
   }
 }
